@@ -1,6 +1,6 @@
 (ns com.keminglabs.zmq-async.t-core
   (:require [com.keminglabs.zmq-async.core :refer :all]
-            [clojure.core.async :refer [go close! >!! <!! chan timeout alts!!]]
+            [clojure.core.async :refer [go close! <! >! >!! <!! chan timeout alts!!]]
             [midje.sweet :refer :all])
   (:import org.zeromq.ZMQ))
 
@@ -38,8 +38,9 @@
                                      (assert (not (.isAlive zmq-thread)))
 
                                      ;;Close any hanging ZeroMQ sockets.
-                                     (doseq [s (.getSockets (context :zcontext))]
-                                       (.close s))))))]
+;                                     (doseq [s (.getSockets (context :zcontext))]
+;                                       (.close s))
+                                     (.destroy (context :zcontext))))))]
 
     ;;TODO: rearchitect so that one concern can be tested at a time?
     ;;Then the zmq looper would need to use accessible mutable state instead of loop/recur...
@@ -98,8 +99,9 @@
                                      (assert (not (.isAlive async-thread)))
 
                                      ;;Close any hanging ZeroMQ sockets.
-                                     (doseq [s (.getSockets (context :zcontext))]
-                                       (.close s))))))]
+;                                     (doseq [s (.getSockets (context :zcontext))]
+;                                       (.close s))
+                                     (.destroy (context :zcontext))))))]
 
     (fact "Tells ZMQ looper to shutdown when the async thread's control channel is closed"
       (close! acontrol)
@@ -183,8 +185,9 @@
                                      (assert (not (.isAlive zmq-thread)))
 
                                      ;;Close any hanging ZeroMQ sockets.
-                                     (doseq [s (.getSockets (context :zcontext))]
-                                       (.close s))))))]
+;                                     (doseq [s (.getSockets (context :zcontext))]
+;                                       (.close s))
+                                     (.destroy (context :zcontext))))))]
 
     (fact "raw->wrapped"
       (let [addr "ipc://test-addr" test-msg "hihi"
